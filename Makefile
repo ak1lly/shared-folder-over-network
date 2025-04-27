@@ -17,4 +17,4 @@ networkFS: networkFS.c
 
 # Clean build artifacts
 clean:
-	rm -f server client
+	rm -f server client networkFS
