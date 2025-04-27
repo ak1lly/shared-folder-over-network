@@ -81,12 +81,14 @@ int main() {
                     fseek(file, offset, SEEK_SET);
 
                     char data[1024];
-                    int n = fread(data, 1, length, file);
+                    char out[1024*2];
+                    int n = fread(data, 1, length, file) + 8;
                     fclose(file);
 
                     if (n > 0) {
-                        send(client_fd, "OK ", 3, 0);
-                        send(client_fd, data, n, 0);
+                        send(client_fd, "OK\n", 3, 0);
+                        sprintf(out, "Output: %s\n", data);
+                        send(client_fd, out, n, 0);
                     } else {
                         send(client_fd, "ERR Cannot read\n", 16, 0);
                     }
