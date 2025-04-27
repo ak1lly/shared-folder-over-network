@@ -110,8 +110,8 @@ int main(int argc, char *argv[])
     int ret;
     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 
-    options.filename = strdup("hello.txt");
-	options.contents = strdup("Hello from FUSE!\n");
+    options.filename = strdup("hello.txt"); // setting up hardcoded file within file system
+    options.contents = strdup("Hello from FUSE!\n"); // setting up hardcoded content to said file.
 
     if (fuse_opt_parse(&args, &options, option_spec, NULL) == -1)
         return 1;
