@@ -1,7 +1,17 @@
-obj-m += network_fs.o
+# Makefile
 
-all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+CC = gcc
+CFLAGS = -Wall -Wextra -O2
 
+# Targets
+all: server client
+
+server: server.c
+	$(CC) $(CFLAGS) server.c -o server
+
+client: client.c
+	$(CC) $(CFLAGS) client.c -o client
+
+# Clean build artifacts
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	rm -f server client
