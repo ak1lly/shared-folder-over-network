@@ -1,4 +1,5 @@
-#include <fuse.h>
+#define FUSE_USE_VERSION 30
+#include <fuse3/fuse.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -23,13 +24,13 @@ static const struct fuse_opt option_spec[] = {
 };
 
 static int network_getattr(const char* path, struct stat *stbuf, struct fuse_file_info *fi) {
-    
-    (void) fi; //to work around compiler warnings for unused function parameters 
-    
+
+    (void) fi; //to work around compiler warnings for unused function parameters
+
     int ret = 0;
 
     memset(stbuf, 0, sizeof(struct stat));
-    if (strcmp(path, "/") == 0) { // get info of directory 
+    if (strcmp(path, "/") == 0) { // get info of directory
         stbuf->st_mode = S_IFDIR | 0755;
 		stbuf->st_nlink = 2;
     } else if (strcmp(path+1, options.filename) == 0) { // get info of file
@@ -45,7 +46,7 @@ static int network_getattr(const char* path, struct stat *stbuf, struct fuse_fil
 
 static int network_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 			 off_t offset, struct fuse_file_info *fi,
-			 enum fuse_readdir_flags flags) 
+			 enum fuse_readdir_flags flags)
 {
     (void) offset;
 	(void) fi;
@@ -55,16 +56,16 @@ static int network_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         return -ENOENT;
 
     // fills directory entries into directory structure of a given directiry path
-    filler(buf, ".", NULL, 0, FUSE_FILL_DIR_DEFAULTS);
-    filler(buf, "..", NULL, 0, FUSE_FILL_DIR_DEFAULTS);
-    filler(buf, options.filename, NULL, 0, FUSE_FILL_DIR_DEFAULTS);
+    filler(buf, ".", NULL, 0, 0);
+    filler(buf, "..", NULL, 0, 0);
+    filler(buf, options.filename, NULL, 0, 0);
 
     return 0;
 }
 
 static int network_open(const char *path, struct fuse_file_info *fi)
 {
-	if (strcmp(path+1, options.filename) != 0) // only files can be executed so wont work if not given a file. 
+    if (strcmp(path+1, options.filename) != 0) // only files can be executed so wont work if not given a file.
 		return -ENOENT;
 
 	if ((fi->flags & O_ACCMODE) != O_RDONLY) // if doesn't have execute permissions on file
@@ -82,17 +83,17 @@ static int network_read(const char *path, char *buf, size_t size, off_t offset,
     if(strcmp(path+1, options.filename) != 0)
         return -ENOENT;
 
-    len = strlen(options.content);
-    if(offset < len) { //if offset pointer is set before the end of the file return appropriate file contents
-        if(offset < len) 
-            size = len - offset;
-        memcpy(buf, options.contents + offset, size);
-    } else {
-        size = 0;
-    }
+    len = strlen(options.contents);
+    if (offset >= len)
+        return 0;
+
+    if (offset + size > len)
+        size = len - offset;
+
+    memcpy(buf, options.contents + offset, size);
 
     return size;
-    
+
 
 }
 
@@ -105,7 +106,7 @@ static struct fuse_operations networkfs_oper = {
     .read    = network_read        // reads contents of file
 };
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     int ret;
     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);

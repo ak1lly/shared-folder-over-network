@@ -86,13 +86,21 @@ Then `fuse_main()` passes control to your operations.
 ---
 
 ### 3. Testing
+Create Directory to mount on:
+```bash
+mkdir -p ~/mnt/myshare
+```
 Mount your FUSE filesystem:
 ```bash
-./myfs /mnt/myshare
+./networkFS ~/mnt/myshare
 ```
 Check:
-- `ls /mnt/myshare`
-- `cat /mnt/myshare/hello.txt`
+```bash
+$ ls ~/mnt/myshare
+hello.txt
+$ cat ~/mnt/myshare/hello.txt
+Hello from FUSE!
+```
 
 Should work even though it’s all fake/hardcoded.
 
@@ -182,3 +190,8 @@ By the end of Week 3, you can:
 ✅ Start **small**.  
 ✅ Each week, finish something that actually "works", even if dumb.  
 ✅ Never design everything upfront — code, test, and *then* extend.
+
+# MUST INSTALL ON LINUX:
+
+    - sudo apt install libfuse3-dev fuse3
+    - sudo apt install pkgconf
