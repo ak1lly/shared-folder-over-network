@@ -191,6 +191,79 @@ By the end of Week 3, you can:
 ✅ Each week, finish something that actually "works", even if dumb.  
 ✅ Never design everything upfront — code, test, and *then* extend.
 
+### ✅ **Week 4: Core Infrastructure & Planning**
+
+**Goals:**
+- Set up the FUSE server
+- Define client-server protocol
+- Set up basic networking
+
+**Tasks:**
+- ✅ Finalize command set (e.g., `OPEN`, `READ`, `WRITE`, `LS`, `GETATTR`)
+- ✅ Implement initial `networkFS.c` with real files managed by server-side FUSE
+- ✅ Make sure server.c runs `fuse_main()` and handles client sockets in parallel (threads or `select`)
+- ✅ Create `client.c` that sends commands like `READ file.txt 0 100`
+- ✅ Set up socket communication from client to server
+
+**Deliverables:**
+- FUSE-based server runs and exposes files
+- One client can connect and do basic file operations via socket
+
+---
+
+### ✅ **Week 5: Full File Operations + Concurrency**
+
+**Goals:**
+- Implement all required file operations via socket
+- Add concurrency support (multiple clients)
+
+**Tasks:**
+- ✅ Support `OPEN`, `READ`, `WRITE`, `GETATTR`, `RELEASE` fully over socket
+- ✅ Add threading or event loop (`select`, `poll`, or `epoll`) to `server.c`
+- ✅ Add proper file locking (if needed)
+- ✅ Handle errors (e.g. bad filenames, offset out of range)
+
+**Deliverables:**
+- Multiple clients can access files concurrently
+- Operations behave correctly under race conditions
+
+---
+
+### ✅ **Week 6: Protocol Refinement & Edge Cases**
+
+**Goals:**
+- Improve protocol and robustness
+
+**Tasks:**
+- ✅ Switch to a structured protocol (e.g. JSON or fixed headers)
+- ✅ Add support for:
+  - Binary-safe read/write
+  - Proper disconnect handling
+  - Timeouts and retries
+- ✅ Ensure FUSE operations (like `readdir`, `stat`, etc.) can pull metadata from internal structures
+
+**Deliverables:**
+- Clients don't hang or crash on failure
+- Protocol is well-defined and extensible
+
+---
+
+### ✅ **Week 7: Security, Deployment & Polish**
+
+**Goals:**
+- Final stability, security, and deployment readiness
+
+**Tasks:**
+- ✅ Add authentication (token or username/password)
+- ✅ Add basic encryption (TLS via `stunnel`, `openssl`, or native)
+- ✅ Allow server IP configuration via flags/env
+- ✅ Set up deployment scripts (e.g. systemd service for server)
+
+**Deliverables:**
+- Secure, authenticated, multi-client shared virtual filesystem
+- Deployed on public server, ready for use
+
+
 # MUST INSTALL ON LINUX:
 
     - sudo apt install libfuse3-dev fuse3
