@@ -9,9 +9,13 @@
 #include <sys/stat.h>  // optional for later
 
 #define PORT 8888
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 4096
 
-int main() {
+char base_dir[512] = ".";
+
+int main(int argc, char* argv[]) {
+    if (argc > 1) strncpy(base_dir, argv[1], sizeof(base_dir)-1); // If you want to change remote folder loaction
+
     int server_fd, client_fd;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -71,7 +75,7 @@ int main() {
                     send(client_fd, "ERR Cannot open file\n", 22, 0);
                 }
             } 
-            else if (strcmp(command, "READ") == 0) {
+            else if (strcmp(command, "cat") == 0) {
                 FILE *file = fopen(arg1, "r");
                 if (!file) {
                     send(client_fd, "ERR Cannot open file\n", 22, 0);
@@ -124,23 +128,23 @@ int main() {
                     }
                 }
             } 
-            else if (strcmp(command, "LS") == 0) {
-                DIR *d;
+            else if (strcmp(command, "ls") == 0) {
+                DIR *d = opendir(arg1[1] ? arg1 + 1 : base_dir);
                 struct dirent *dir;
-                d = opendir(arg1);
+                char out[BUFFER_SIZE];
                 if (d) {
-                    send(client_fd, "OK ", 3, 0);
                     while ((dir = readdir(d)) != NULL) {
-                        send(client_fd, dir->d_name, strlen(dir->d_name), 0);
-                        send(client_fd, " ", 1, 0);
+                        strcat(out, dir->d_name);
+                        strcat(out, "\n"); // Seperator
                     }
                     closedir(d);
+                    send(client_fd, out, strlen(out), 0);
                 } else {
-                    send(client_fd, "ERR Cannot open directory\n", 26, 0);
+                    send(client_fd, "Error: Cannot access directory\n", 26, 0);
                 }
             } 
             else {
-                send(client_fd, "ERR Unknown command\n", 21, 0);
+                send(client_fd, "Error: Unknown command.\n", 21, 0);
             }
         }
 

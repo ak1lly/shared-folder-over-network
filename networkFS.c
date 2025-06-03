@@ -106,8 +106,7 @@ static struct fuse_operations networkfs_oper = {
     .read    = network_read        // reads contents of file
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int ret;
     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 

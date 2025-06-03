@@ -8,7 +8,7 @@ CONFIGS = `pkg-config fuse3 --cflags --libs`
 all: server client
 
 server: server.c
-	$(CC) $(CFLAGS) server.c -o server
+	gcc -o server server.c `pkg-config fuse3 --cflags --libs`
 
 client: client.c
 	$(CC) $(CFLAGS) client.c -o client
@@ -19,3 +19,5 @@ networkFS: networkFS.c
 # Clean build artifacts
 clean:
 	rm -f server client networkFS
+
+
